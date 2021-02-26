@@ -17,17 +17,7 @@ session=Session(bind=engine)
 Measurement=Base.classes.measurement
 Station=Base.classes.station
 
-station_list= [
-        {"station": "USC00519281"}, 
-        {"station": "USC00519397"},
-        {"station": "USC00513117"},
-        {"station": "USC00519523"},
-        {"station": "USC00516128"},
-        {"station": "USC00514830"},
-        {"station": "USC00511918"},
-        {"station": "USC00517948"},
-        {"station": "USC00518838'"},
-]
+
 app=Flask(__name__)
 
 #List all routes that are available
@@ -40,15 +30,16 @@ def home():
 #Return the JSON representation of your dictionary.
 @app.route("/api/v1.0/precipitation")
 def percipitation():
+    #start session here
     last_date=session.query(Measurement.date).order_by(Measurement.date.desc()).first()
     prior_year=dt.date(2017,8,23) - dt.timedelta(days=365)
     lastyear_query=session.query(Measurement.date, Measurement.prcp).\
     filter(Measurement.date > prior_year).all()
-        
     x=dict(lastyear_query)
-
+    #close session here
     something_here=jsonify(x)
     return something_here
+   
 
 #Return a JSON list of stations from the dataset
 #see dictionary defined above
@@ -79,7 +70,7 @@ def tobs():
 
 
 #/api/v1.0/<start> and /api/v1.0/<start>/<end>
-#Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
+#Return a JSON list of the minimum Ftemperature, the average temperature, and the max temperature for a given start or start-end range.
 #When given the start only, calculate TMIN, TAVG, and TMAX for all dates greater than and equal to the start date.
 #When given the start and the end date, calculate the TMIN, TAVG, and TMAX for dates between the start and end date inclusive.
 @app.route("/api/v1.0/<start_date>/<end_date>")
